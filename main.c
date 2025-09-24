@@ -8,7 +8,18 @@
 #define CRASH_RL_BUFSIZE 1024
 #define CRASH_TOK_BUFSIZE 64
 #define CRASH_TOK_DELIM " \t\r\n\a"
+#define ANSI_TEXT_CLEAR "\033[0m"
+#define TRUECOLOR_BG_1 "\x1b[48;2;167;139;250m"
+#define TRUECOLOR_FG_1 "\x1b[38;2;167;139;250m"
+#define TRUECOLOR_BG_2 "\x1b[48;2;106;90;205m"
+#define TRUECOLOR_FG_2 "\x1b[38;2;106;90;205m"
 
+
+// void colorTest(){
+//   printf(TRUECOLOR_BG_1 "Hello" TRUECOLOR_FG_1 TRUECOLOR_BG_2"" "Hello" ANSI_TEXT_CLEAR ANSI_BG_CLEAR);
+//       //printf(ANSI_TEXT_MAGENTA "\n[%s@%s]%s:"ANSI_TEXT_CLEAR, username,hostname, local_dir);
+
+// }
 // Forward declarations for builtin functions
 int crash_cd(char **args);
 int crash_help(char **args);
@@ -31,8 +42,7 @@ int (*builtin_func[]) (char **) = {
   &crash_exit
 };
 
-int crash_execute(char **args)
-{
+int crash_execute(char **args){
   int i;
 
   if (args[0] == NULL) {
@@ -185,7 +195,6 @@ char *crash_read_line(void)
 }
 
 void crash_loop(void){
-  
   char *line;
    char **args;
    int status;
@@ -195,8 +204,7 @@ void crash_loop(void){
     char* directory = getenv("PWD");
     char* hostname = getenv("HOSTNAME");
     char *local_dir = basename(directory);
-    printf("\n[%s@%s]/%s:", username,hostname, local_dir);
-    // printf("> ");
+    printf(TRUECOLOR_BG_1 "\n%s@%s "TRUECOLOR_FG_1 TRUECOLOR_BG_2"%s" ANSI_TEXT_CLEAR TRUECOLOR_FG_2"" ANSI_TEXT_CLEAR ":" , username,hostname, local_dir);
     line = crash_read_line();
     args = crash_split_line(line);
     status = crash_execute(args);
@@ -205,14 +213,17 @@ void crash_loop(void){
     free(args);
   } while (status);
 }
+
 void init_shell(){
-    printf("\n╔═════════════════════════════════════╗");
+    printf("\x1b[38;2;255;0;0m Hewwo");
+
+    printf("\n\033[95m╔═════════════════════════════════════╗");
     printf("\n║                                     ║");
     printf("\n║          Welcome to CraSH!          ║");
     printf("\n║  This could only go well... Right?  ║");
     printf("\n║                                     ║");
-    printf("\n╚═════════════════════════════════════╝");
-
+    printf("\n╚═════════════════════════════════════╝" ANSI_TEXT_CLEAR);
+    printf("hello");
 }
 
 int main(int argc, char **argv){
@@ -222,6 +233,7 @@ int main(int argc, char **argv){
 
 
   // Run command loop.
+  // colorTest();
   init_shell();
   crash_loop();
 
