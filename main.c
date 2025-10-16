@@ -13,6 +13,8 @@
 #define TRUECOLOR_FG_1 "\x1b[38;2;167;139;250m"
 #define TRUECOLOR_BG_2 "\x1b[48;2;106;90;205m"
 #define TRUECOLOR_FG_2 "\x1b[38;2;106;90;205m"
+#define ANSI_TEXT_WHITE "\033[38;2;255;255;255m"
+#define ANSI_BOLD "\033[22m"
 
 
 
@@ -20,7 +22,7 @@
 int crash_cd(char **args);
 int crash_help(char **args);
 int crash_exit(char **args);
-
+int crash_alias(char **args);
 // Forward declarations for other functions
 int crash_launch(char **args);
 int crash_num_builtins(void);
@@ -29,20 +31,23 @@ int crash_num_builtins(void);
 char *builtin_str[] = {
   "cd",
   "help",
-  "exit"
+  "exit",
+  "alias"
+
 };
 
 int (*builtin_func[]) (char **) = {
   &crash_cd,
   &crash_help,
-  &crash_exit
+  &crash_exit,
+  &crash_alias
 };
 
 int crash_execute(char **args){
   int i;
 
   if (args[0] == NULL) {
-    // An empty command was entered.
+    printf("hewwo");
     return 1;
   }
 
@@ -58,7 +63,7 @@ int crash_execute(char **args){
 int crash_cd(char **args);
 int crash_help(char **args);
 int crash_exit(char **args);
-
+int crash_alias(char **args);
 int crash_num_builtins() {
   return sizeof(builtin_str) / sizeof(char *);
 }
@@ -97,6 +102,13 @@ int crash_exit(char **args)
 {
   return 0;
 }
+
+int crash_alias(char **args)
+{
+  printf("Alias is still unsupported by CraSH(Sorry!)");
+  return 1;
+}
+
 
 int crash_launch(char **args)
 {
@@ -200,7 +212,19 @@ void crash_loop(void){
     char* directory = getenv("PWD");
     char* hostname = getenv("HOSTNAME");
     char *local_dir = basename(directory);
-    printf("\n"TRUECOLOR_BG_1 "%s@%s "TRUECOLOR_FG_1 TRUECOLOR_BG_2"%s" ANSI_TEXT_CLEAR TRUECOLOR_FG_2"" ANSI_TEXT_CLEAR ":" ANSI_TEXT_CLEAR, username,hostname, local_dir);
+    printf("\n"TRUECOLOR_BG_1
+       ANSI_TEXT_WHITE
+        " %s "
+        TRUECOLOR_FG_1
+        TRUECOLOR_BG_2
+        ""
+        ANSI_TEXT_WHITE
+        " %s "
+        ANSI_TEXT_CLEAR
+        TRUECOLOR_FG_2
+        " "
+        ANSI_TEXT_CLEAR
+        , username, local_dir);
     line = crash_read_line();
     args = crash_split_line(line);
     status = crash_execute(args);
@@ -211,10 +235,11 @@ void crash_loop(void){
 }
 
 void init_shell(){
-    printf("\n\033[95m╔═════════════════════════════════════╗");
+    printf("\033[95m╔═════════════════════════════════════╗");
     printf("\n║                                     ║");
     printf("\n║          Welcome to CraSH!          ║");
     printf("\n║  This could only go well... Right?  ║");
+    printf("\n║ THIS IS UNFINISHED,a lot won't work ║");
     printf("\n║                                     ║");
     printf("\n╚═════════════════════════════════════╝" ANSI_TEXT_CLEAR);
 }
@@ -222,12 +247,19 @@ void init_shell(){
 int main(int argc, char **argv){
   // Load config files, if any.
 
-    // return 0;
+    bool intro = false;
 
-
-  // Run command loop.
-  // colorTest();
+  for (int i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "--intro") == 0) {
+      intro = true;
+    } 
+      else {
+        break;
+      }
+  }
+  if (intro == true){
   init_shell();
+  }
   crash_loop();
 
   // Perform any shutdown/cleanup.
